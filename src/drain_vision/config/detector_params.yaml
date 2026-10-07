@@ -1,0 +1,35 @@
+# =============================================================================
+#  drain_vision · drain_detector 파라미터
+# =============================================================================
+#  ★ 이 노드는 Hailo 가속기(PCIe)가 있어야 뜬다. 없으면 import 단계에서 멈춘다.
+#     하드웨어 확인:  lspci | grep -i hailo
+#                     hailortcli fw-control identify
+# =============================================================================
+
+drain_detector:
+  ros__parameters:
+
+    # ── 모델 ─────────────────────────────────────────────────────────────
+    #  파일명만 적으면 패키지 share/models/ 기준으로 해석된다 (절대경로도 허용)
+    #
+    #  [2026-08-29] v2 로 교체. 파일명은 받은 그대로 두고 여기 이름만 바꿨다(사용자 지시).
+    #    yolov11s_v2.hef    : 현재 모델. 1클래스(drain) YOLOv11s · DFC 3.33.1 · 18.6MB
+    #    yolov11s_drain.hef : 옛 모델. 지우지 않고 남겨 뒀다 — 이 줄만 되돌리면 롤백된다
+    #  ★ 두 파일 모두 구조가 같다(입력 640x640 UINT8 NHWC · 1클래스 · 칩 NMS).
+    #     그래서 아래 input_width/height · class_names 는 손대지 않았다.
+    #  ★ 칩 안에 박힌 NMS score threshold 는 v2 도 여전히 0.300 이다.
+    #     아래 conf_threshold 를 0.3 아래로 내려도 소용없다(칩이 먼저 버린다).
+    model_path: "yolov11s_v2.hef"
+    conf_threshold: 0.3
+
+    #  모델 입력 해상도. .hef 를 다시 컴파일하지 않는 한 640x640 고정이다
+    input_width: 640
+    input_height: 640
+
+    #  콤마로 구분. 이 .hef 는 1클래스 모델이라 "drain" 하나면 된다.
+    #  비워두면 ["drain"] 으로 폴백한다 (예전의 COCO 80종 폴백은 제거됨)
+    class_names: "drain"
+
+    # ── 토픽 ─────────────────────────────────────────────────────────────
+    image_topic: "/image_raw"
+    detection_image_topic: "/detections/image"

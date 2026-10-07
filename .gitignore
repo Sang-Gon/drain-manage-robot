@@ -1,0 +1,36 @@
+# ROS2 워크스페이스 빌드 결과
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ROS2
+.ros/
+*.deb
+
+# 테스트 결과
+.pytest_cache/
+.coverage
+htmlcov/

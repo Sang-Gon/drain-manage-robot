@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>drain_tof</name>
+  <version>0.1.0</version>
+  <description>TOF 거리 정리 + 배수구 청소 필요 여부 판정 (Main ECU / 라즈베리파이5)</description>
+  <maintainer email="team@example.com">team</maintainer>
+  <license>MIT</license>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>robot_interfaces</exec_depend>
+
+  <export><build_type>ament_python</build_type></export>
+</package>

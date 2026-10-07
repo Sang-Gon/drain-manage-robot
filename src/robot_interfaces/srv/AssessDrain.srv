@@ -1,0 +1,27 @@
+# 배수구 청소 필요 여부 판정 요청.  TaskManager -> TOF 노드
+#
+# [주의] 이 파일의 주석에 줄 끝 역슬래시를 쓰지 말 것.
+#        rosidl_adapter 가 IDL 템플릿에 주석을 넣을 때 빌드가 깨진다.
+#
+# ★ 왜 서비스인가 ★
+#   판정은 로봇이 배수구 앞에 **정지한 뒤** 그 순간에만 해야 한다.
+#   토픽으로 계속 흘리면 주행 중 흔들리는 값까지 섞이고,
+#   TaskManager 가 "언제 값이 유효한지"를 다시 판단해야 한다.
+#   요청-응답이면 "지금 재라"와 "다 쟀다"가 한 쌍으로 묶인다.
+#
+# ★ 판정 규칙은 TOF 노드가 갖는다 ★
+#   TaskManager 는 '언제 물을지'만 정하고 '어떻게 판정하는지'는 모른다.
+#   철판 반사 제거 · 평균 · 문턱은 전부 TOF 노드 쪽 파라미터다.
+
+uint8 sample_count      # 몇 샘플을 모아 판정할지. 0이면 TOF 노드 기본값
+---
+# verdict 값. ReportDrain / TaskState 도 같은 번호를 쓴다
+uint8 VERDICT_UNKNOWN=0      # 판정 불가 (샘플 부족 · stale · 노드 없음)
+uint8 VERDICT_NOT_NEEDED=1   # 청소 불필요
+uint8 VERDICT_NEEDED=2       # 청소 필요
+
+uint8   verdict
+float32 mean_distance_cm     # 유효 센서만의 평균 거리 [cm]
+uint8   valid_sensor_count   # 철판 반사로 버린 것을 뺀 유효 센서 개수 (0~6)
+uint8[6] sensor_distances    # 판정에 쓴 원시 6개 값 [cm]. 사후 검토용
+string  detail               # 근거 문자열 (사람이 읽는 용도)

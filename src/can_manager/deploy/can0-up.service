@@ -1,0 +1,50 @@
+# =============================================================================
+#  can0 인터페이스 자동 기동 서비스
+# =============================================================================
+#  설치:
+#    sudo cp can0-up.service /etc/systemd/system/
+#    sudo systemctl daemon-reload
+#    sudo systemctl enable can0-up.service
+#    sudo systemctl start can0-up.service
+#
+#  상태 확인:
+#    systemctl status can0-up.service
+#    ip -details link show can0        # ERROR-ACTIVE 여야 정상
+#  해제:
+#    sudo systemctl disable --now can0-up.service
+#
+#  ★ 안전 ★ 이 유닛은 **인터페이스만 올린다. 아무것도 송신하지 않는다.**
+#     따라서 이것만으로는 모터가 절대 돌지 않는다.
+#     can_manager 노드까지 자동 기동시키는 것은 전혀 다른 문제다 —
+#     노드는 기동 즉시 0x200 을 100ms 주기로 쏘기 시작한다.
+#     그건 미해결 1·2번(부호 규약·스케일)이 닫힌 뒤에 따로 판단할 것. (14단계 참조)
+#
+#  ★ launch 파일로는 못 한다 ★ ip link 는 root 가 필요하고 ROS 2 launch 는
+#     일반 사용자로 돈다. 인터페이스 기동은 "ROS 이전" 계층의 일이다.
+# =============================================================================
+
+[Unit]
+Description=Bring up can0 interface (500 kbps, sample-point 87.5%%)
+# ★ [2026-08-22 수정] After=network.target 이었으나 그것으로는 부족하다 ★
+#   can0 은 NIC 가 아니라 mcp251x(SPI) 드라이버가 만드는 장치다.
+#   network.target 시점에는 아직 없을 수 있고, 그러면 ExecStart 가
+#   "Cannot find device can0" 로 실패한 채 끝난다.
+#   장치 유닛에 묶어서 **장치가 나타난 뒤** 실행되게 한다.
+BindsTo=sys-subsystem-net-devices-can0.device
+After=sys-subsystem-net-devices-can0.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+# bitrate 500000    : BLDC/BAT/TOF ECU와 반드시 일치해야 함
+# sample-point 0.875: STM32 FDCAN측 설정과 동일하게 맞춤
+# restart-ms 100    : bus-off 발생 시 커널이 100ms 후 자동 복구
+#                     (이걸 켜두면 노드의 auto_recover_bus_off는 false로 둘 것)
+ExecStart=/sbin/ip link set can0 up type can bitrate 500000 sample-point 0.875 restart-ms 100
+ExecStop=/sbin/ip link set can0 down
+
+[Install]
+# [2026-08-22 수정] multi-user.target -> device 유닛.
+#   그래야 장치가 늦게 나타나거나 재열거돼도 다시 올라온다.
+WantedBy=sys-subsystem-net-devices-can0.device
