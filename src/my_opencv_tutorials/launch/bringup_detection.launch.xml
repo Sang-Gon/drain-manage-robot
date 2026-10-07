@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="cv_params"   default="$(find-pkg-share my_opencv_tutorials)/config/cv_params.yaml" />
+    <arg name="yolo_params" default="$(find-pkg-share my_opencv_tutorials)/config/yolo_params.yaml" />
+
+    <!-- 카메라 → /image_raw 발행 -->
+    <node pkg="my_opencv_tutorials" exec="img_pub" output="screen">
+        <param from="$(var cv_params)" />
+    </node>
+
+    <!-- YOLO 탐지 노드: /image_raw → /detections/image -->
+    <node pkg="my_opencv_tutorials" exec="yolo_detect" output="screen">
+        <param from="$(var yolo_params)" />
+    </node>
+</launch>

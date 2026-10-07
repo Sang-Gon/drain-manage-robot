@@ -1,0 +1,8 @@
+yolo_detector:
+  ros__parameters:
+    # 파일명만 적으면 패키지 share/models/ 기준으로 해석된다 (절대경로도 허용)
+    model_path: "yolov11s_drain.hef"
+    conf_threshold: 0.3
+    input_width: 640
+    input_height: 640
+    class_names: "drain"

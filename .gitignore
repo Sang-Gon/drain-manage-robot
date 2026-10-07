@@ -1,4 +1,4 @@
-# ROS2 워크스페이스 빌드 결과
+# ROS2 빌드 산출물
 build/
 install/
 log/
@@ -9,8 +9,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
-venv/
 *.egg-info/
 dist/
 *.egg
@@ -21,16 +19,20 @@ dist/
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
-Thumbs.db
 
-# ROS2
-.ros/
-*.deb
+# ROS
+.ros2_cache/
+*.bagfile
 
-# 테스트 결과
+# 테스트
 .pytest_cache/
 .coverage
-htmlcov/
+
+# 임시 파일
+*.tmp
+*.log.bak
+*.jpg
+*.png
+*.bagfile
+hailort.log

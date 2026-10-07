@@ -1,0 +1,6 @@
+img_publisher:
+  ros__parameters:
+    camera_device: 0
+    width: 640
+    height: 480
+    frame_rate: 10
